@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getMapleList, getMapleByJob } from '../api/Maple';
+import { getMapleList } from '../api/Maple';
 import MapleCard from '../components/MapleCard';
 
 const MapleList = () => {
@@ -15,9 +15,11 @@ const MapleList = () => {
         setSearchTerm(e.target.value);
     };
 
-    const filteredMaples = maples?.filter(maple =>
-        maple.job.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredMaples = useMemo(() => {
+        return maples?.filter(maple =>
+            maple.character_class.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [maples, searchTerm]);
 
     if (isLoading) return <div className="flex justify-center items-center h-screen text-xl">Loading...</div>;
     if (error) return <div className="flex justify-center items-center h-screen text-red-500">Error loading data</div>;
@@ -48,10 +50,10 @@ const MapleList = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
                     {filteredMaples && filteredMaples.length > 0 ? (
                         filteredMaples.map((maple) => (
-                            <MapleCard key={maple.id || maple.name} data={maple} />
+                            <MapleCard key={maple.id || maple.character_name} data={maple} />
                         ))
                     ) : (
                         <div className="col-span-full flex justify-center w-full">
